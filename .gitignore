@@ -7,3 +7,4 @@ klippy/.version
 .vs/*
 .bin/
 .obj/
+.vs
