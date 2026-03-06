@@ -9,6 +9,13 @@ class SafeZHoming:
         self.move_to_previous = config.getboolean('move_to_previous', False)
         self.homing_order = [axis.strip().upper() for axis in config.get("homing_order", default="X,Y,Z").split(",")]
 
+        # Step current settings
+        self.hop_current = config.getfloat('hop_current', None)
+        self.run_current = config.getfloat('run_current', None)
+        
+        # Define triple Z steppers
+        self.z_steppers = ["stepper_z", "stepper_z1", "stepper_z2"]
+
         zconfig = config.getsection('stepper_z')
         self.max_z = zconfig.getfloat('position_max', note_valid=False)
 
@@ -20,10 +27,25 @@ class SafeZHoming:
         if config.has_section("homing_override"):
             raise config.error("homing_override and safe_z_homing cannot be used simultaneously")
 
+    def set_stepper_current(self, current):
+        if current is None:
+            return
+        try:
+            # Loop for Z, Z1, Z2
+            for stepper in self.z_steppers:
+                cmd = "SET_TMC_CURRENT STEPPER={} CURRENT={}".format(stepper, current)
+                self.gcode.run_script_from_command(cmd)
+        except Exception as e:
+            self.gcode.respond_info("Failed to set current: " + str(e))
+
     def cmd_G28(self, gcmd):
         toolhead = self.printer.lookup_object('toolhead')
 
-        # Perform Z Hop if necessary
+        # 1. Set hop current before Z-hop
+        if self.hop_current is not None:
+            self.set_stepper_current(self.hop_current)
+
+        # Perform Z Hop
         if self.z_hop != 0.0:
             curtime = self.printer.get_reactor().monotonic()
             kin_status = toolhead.get_kinematics().get_status(curtime)
@@ -37,12 +59,10 @@ class SafeZHoming:
             elif pos[2] < self.z_hop:
                 toolhead.manual_move([None, None, self.z_hop], self.z_hop_speed)
 
-        # Determine which axes need homing
         requested = {axis: gcmd.get(axis, None) is not None for axis in "XYZ"}
         if not any(requested.values()):
             requested = {axis: True for axis in "XYZ"}
 
-        # Homing in specified order
         for axis in self.homing_order:
             if not requested.get(axis):
                 continue
@@ -52,6 +72,10 @@ class SafeZHoming:
                 self.prev_G28(g28_gcmd)
 
             elif axis == "Z":
+                # 2. Restore run current before Z homing
+                if self.run_current is not None:
+                    self.set_stepper_current(self.run_current)
+
                 curtime = self.printer.get_reactor().monotonic()
                 kin_status = toolhead.get_kinematics().get_status(curtime)
                 if 'x' not in kin_status['homed_axes'] or 'y' not in kin_status['homed_axes']:
