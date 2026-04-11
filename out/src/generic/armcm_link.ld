@@ -44,5 +44,7 @@ SECTIONS
     /DISCARD/ : {
         *(.init)
         *(.fini)
+        *(.ARM.extab)
+        *(.ARM.exidx)
     }
 }

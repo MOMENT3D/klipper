@@ -63,8 +63,9 @@ DECL_COMMAND_FLAGS command_set_next_step_dir 0 set_next_step_dir oid=%c dir=%c
 DECL_COMMAND_FLAGS command_queue_step 0 queue_step oid=%c interval=%u count=%hu add=%hi
 _DECL_STATIC_STR Invalid count parameter
 DECL_COMMAND_FLAGS command_config_stepper 0 config_stepper oid=%c step_pin=%c dir_pin=%c invert_step=%c step_pulse_ticks=%u
+DECL_CONSTANT STEPPER_OPTIMIZED_EDGE +0x00000008
 _DECL_STATIC_STR Stepper too far in past
-DECL_CONSTANT STEPPER_BOTH_EDGE +0x00000001
+DECL_CONSTANT STEPPER_STEP_BOTH_EDGE +0x00000001
 DECL_COMMAND_FLAGS command_endstop_query_state 0 endstop_query_state oid=%c
 _DECL_ENCODER endstop_state oid=%c homing=%c next_clock=%u pin_value=%c
 DECL_COMMAND_FLAGS command_endstop_home 0 endstop_home oid=%c clock=%u sample_ticks=%u sample_count=%c rest_ticks=%u pin_value=%c trsync_oid=%c trigger_reason=%c
@@ -79,8 +80,10 @@ _DECL_STATIC_STR Can't add signal that is already active
 DECL_COMMAND_FLAGS command_config_trsync 0 config_trsync oid=%c
 _DECL_CALLLIST ctr_run_shutdownfuncs analog_in_shutdown
 _DECL_CALLLIST ctr_run_taskfuncs analog_in_task
-_DECL_ENCODER analog_in_state oid=%c next_clock=%u value=%hu
-DECL_COMMAND_FLAGS command_query_analog_in 0 query_analog_in oid=%c clock=%u sample_ticks=%u sample_count=%c rest_ticks=%u min_value=%hu max_value=%hu range_check_count=%c
+_DECL_ENCODER analog_in_state oid=%c next_clock=%u values=%*s
+DECL_COMMAND_FLAGS command_analog_in_attach_trigger_analog 0 analog_in_attach_trigger_analog oid=%c trigger_analog_oid=%c
+DECL_COMMAND_FLAGS command_query_analog_in 0 query_analog_in oid=%c clock=%u sample_ticks=%u sample_count=%c rest_ticks=%u bytes_per_report=%c min_value=%hu max_value=%hu range_check_count=%c
+_DECL_STATIC_STR Invalid analog_in bytes_per_report
 DECL_COMMAND_FLAGS command_config_analog_in 0 config_analog_in oid=%c pin=%u
 _DECL_STATIC_STR ADC out of range
 _DECL_CALLLIST ctr_run_shutdownfuncs spidev_shutdown
@@ -93,13 +96,19 @@ DECL_COMMAND_FLAGS command_spi_set_bus 0 spi_set_bus oid=%c spi_bus=%u mode=%u r
 _DECL_STATIC_STR Invalid spi config
 DECL_COMMAND_FLAGS command_config_spi_without_cs 0 config_spi_without_cs oid=%c
 DECL_COMMAND_FLAGS command_config_spi 0 config_spi oid=%c pin=%u cs_active_high=%c
-DECL_COMMAND_FLAGS command_i2c_modify_bits 0 i2c_modify_bits oid=%c reg=%*s clear_set_bits=%*s
-_DECL_STATIC_STR i2c_modify_bits: Odd number of bits!
-DECL_COMMAND_FLAGS command_i2c_read 0 i2c_read oid=%c reg=%*s read_len=%u
-_DECL_ENCODER i2c_read_response oid=%c response=%*s
-DECL_COMMAND_FLAGS command_i2c_write 0 i2c_write oid=%c data=%*s
+DECL_COMMAND_FLAGS command_i2c_transfer 0 i2c_transfer oid=%c write=%*s read_len=%u
+_DECL_ENCODER i2c_response oid=%c i2c_bus_status=%c response=%*s
+_DECL_STATIC_STR I2C Timeout
+_DECL_STATIC_STR I2C START READ NACK
+_DECL_STATIC_STR I2C START NACK
+_DECL_STATIC_STR I2C NACK
 DECL_COMMAND_FLAGS command_i2c_set_bus 0 i2c_set_bus oid=%c i2c_bus=%u rate=%u address=%u
 DECL_COMMAND_FLAGS command_config_i2c 0 config_i2c oid=%c
+DECL_ENUMERATION i2c_bus_status BUS_TIMEOUT +0x00000002
+DECL_ENUMERATION i2c_bus_status START_READ_NACK +0x00000004
+DECL_ENUMERATION i2c_bus_status START_NACK +0x00000003
+DECL_ENUMERATION i2c_bus_status NACK +0x00000001
+DECL_ENUMERATION i2c_bus_status SUCCESS +0x00000000
 DECL_COMMAND_FLAGS command_set_pwm_out 0 set_pwm_out pin=%u cycle_ticks=%u value=%hu
 _DECL_CALLLIST ctr_run_shutdownfuncs pwm_shutdown
 DECL_COMMAND_FLAGS command_queue_pwm_out 0 queue_pwm_out oid=%c clock=%u value=%hu
@@ -140,10 +149,9 @@ _DECL_CALLLIST ctr_run_shutdownfuncs hd44780_shutdown
 DECL_COMMAND_FLAGS command_hd44780_send_data 0 hd44780_send_data oid=%c data=%*s
 DECL_COMMAND_FLAGS command_hd44780_send_cmds 0 hd44780_send_cmds oid=%c cmds=%*s
 DECL_COMMAND_FLAGS command_config_hd44780 0 config_hd44780 oid=%c rs_pin=%u e_pin=%u d4_pin=%u d5_pin=%u d6_pin=%u d7_pin=%u delay_ticks=%u
-DECL_COMMAND_FLAGS command_spi_set_software_bus 0 spi_set_software_bus oid=%c miso_pin=%u mosi_pin=%u sclk_pin=%u mode=%u rate=%u
+DECL_COMMAND_FLAGS command_spi_set_sw_bus 0 spi_set_sw_bus oid=%c miso_pin=%u mosi_pin=%u sclk_pin=%u mode=%u pulse_ticks=%u
 _DECL_STATIC_STR Invalid spi config
-_DECL_STATIC_STR soft_i2c NACK
-DECL_COMMAND_FLAGS command_i2c_set_software_bus 0 i2c_set_software_bus oid=%c scl_pin=%u sda_pin=%u rate=%u address=%u
+DECL_COMMAND_FLAGS command_i2c_set_sw_bus 0 i2c_set_sw_bus oid=%c scl_pin=%u sda_pin=%u pulse_ticks=%u address=%u
 _DECL_CALLLIST ctr_run_taskfuncs thermocouple_task
 _DECL_STATIC_STR Thermocouple reader fault
 _DECL_ENCODER thermocouple_result oid=%c next_clock=%u value=%u fault=%c
@@ -158,6 +166,56 @@ _DECL_CALLLIST ctr_run_taskfuncs adxl345_task
 DECL_COMMAND_FLAGS command_query_adxl345_status 0 query_adxl345_status oid=%c
 DECL_COMMAND_FLAGS command_query_adxl345 0 query_adxl345 oid=%c rest_ticks=%u
 DECL_COMMAND_FLAGS command_config_adxl345 0 config_adxl345 oid=%c spi_oid=%c
+_DECL_CALLLIST ctr_run_taskfuncs lis2dw_task
+DECL_COMMAND_FLAGS command_query_lis2dw_status 0 query_lis2dw_status oid=%c
+DECL_COMMAND_FLAGS command_query_lis2dw 0 query_lis2dw oid=%c rest_ticks=%u
+DECL_COMMAND_FLAGS command_config_lis2dw 0 config_lis2dw oid=%c bus_oid=%c bus_oid_type=%c lis_chip_type=%c
+_DECL_STATIC_STR model type invalid
+_DECL_STATIC_STR bus_type invalid
+_DECL_STATIC_STR bus_type i2c unsupported
+_DECL_STATIC_STR bus_type spi unsupported
+DECL_ENUMERATION lis_chip_type LIS3DH +0x00000001
+DECL_ENUMERATION lis_chip_type LIS2DW +0x00000000
+DECL_ENUMERATION bus_oid_type i2c +0x00000001
+DECL_ENUMERATION bus_oid_type spi +0x00000000
+_DECL_CALLLIST ctr_run_taskfuncs bmi160_task
+DECL_COMMAND_FLAGS command_query_bmi160_status 0 query_bmi160_status oid=%c
+DECL_COMMAND_FLAGS command_query_bmi160 0 query_bmi160 oid=%c rest_ticks=%u
+DECL_COMMAND_FLAGS command_config_bmi160 0 config_bmi160 oid=%c bus_oid=%c bus_oid_type=%c
+_DECL_STATIC_STR bus_type invalid
+_DECL_STATIC_STR bus_type i2c unsupported
+_DECL_STATIC_STR bus_type spi unsupported
+DECL_ENUMERATION bus_oid_type i2c +0x00000001
+DECL_ENUMERATION bus_oid_type spi +0x00000000
+_DECL_CALLLIST ctr_run_taskfuncs mpu9250_task
+DECL_COMMAND_FLAGS command_query_mpu9250_status 0 query_mpu9250_status oid=%c
+DECL_COMMAND_FLAGS command_query_mpu9250 0 query_mpu9250 oid=%c rest_ticks=%u
+DECL_COMMAND_FLAGS command_config_mpu9250 0 config_mpu9250 oid=%c i2c_oid=%c
+_DECL_CALLLIST ctr_run_taskfuncs icm20948_task
+DECL_COMMAND_FLAGS command_query_icm20948_status 0 query_icm20948_status oid=%c
+DECL_COMMAND_FLAGS command_query_icm20948 0 query_icm20948 oid=%c rest_ticks=%u
+DECL_COMMAND_FLAGS command_config_icm20948 0 config_icm20948 oid=%c i2c_oid=%c
+_DECL_CALLLIST ctr_run_taskfuncs hx71x_capture_task
+DECL_COMMAND_FLAGS command_query_hx71x_status 0 query_hx71x_status oid=%c
+DECL_COMMAND_FLAGS command_query_hx71x 0 query_hx71x oid=%c rest_ticks=%u
+DECL_COMMAND_FLAGS hx71x_attach_trigger_analog 0 hx71x_attach_trigger_analog oid=%c trigger_analog_oid=%c
+DECL_COMMAND_FLAGS command_config_hx71x 0 config_hx71x oid=%c gain_channel=%c dout_pin=%u sclk_pin=%u
+_DECL_STATIC_STR HX71x gain/channel out of range 1-4
+_DECL_CALLLIST ctr_run_taskfuncs ads1220_capture_task
+DECL_COMMAND_FLAGS command_query_ads1220_status 0 query_ads1220_status oid=%c
+DECL_COMMAND_FLAGS command_query_ads1220 0 query_ads1220 oid=%c rest_ticks=%u
+DECL_COMMAND_FLAGS ads1220_attach_trigger_analog 0 ads1220_attach_trigger_analog oid=%c trigger_analog_oid=%c
+DECL_COMMAND_FLAGS command_config_ads1220 0 config_ads1220 oid=%c spi_oid=%c data_ready_pin=%u
+_DECL_CALLLIST ctr_run_taskfuncs ldc1612_task
+DECL_COMMAND_FLAGS command_query_status_ldc1612 0 query_status_ldc1612 oid=%c
+DECL_COMMAND_FLAGS command_query_ldc1612 0 query_ldc1612 oid=%c rest_ticks=%u
+DECL_COMMAND_FLAGS ldc1612_attach_trigger_analog 0 ldc1612_attach_trigger_analog oid=%c trigger_analog_oid=%c
+DECL_COMMAND_FLAGS command_config_ldc1612_with_intb 0 config_ldc1612_with_intb oid=%c i2c_oid=%c intb_pin=%c
+DECL_COMMAND_FLAGS command_config_ldc1612 0 config_ldc1612 oid=%c i2c_oid=%c
+DECL_ENUMERATION ldc1612_error: INVALID_READ_DATA +0x00000003
+DECL_ENUMERATION ldc1612_error: I2C_DATA_ERROR +0x00000002
+DECL_ENUMERATION ldc1612_error: I2C_STATUS_ERROR +0x00000001
+DECL_ENUMERATION ldc1612_error: SENSOR_REPORTS_ERROR +0x00000000
 _DECL_CALLLIST ctr_run_taskfuncs spi_angle_task
 DECL_COMMAND_FLAGS command_spi_angle_transfer 0 spi_angle_transfer oid=%c data=%*s
 _DECL_ENCODER spi_angle_transfer_response oid=%c clock=%u response=%*s
@@ -165,47 +223,92 @@ DECL_COMMAND_FLAGS command_query_spi_angle 0 query_spi_angle oid=%c clock=%u res
 DECL_COMMAND_FLAGS command_config_spi_angle 0 config_spi_angle oid=%c spi_oid=%c spi_angle_type=%c
 _DECL_STATIC_STR angle sensor requires cs pin
 _DECL_STATIC_STR Invalid spi_angle chip type
+DECL_ENUMERATION spi_angle_type mt6826s +0x00000004
+DECL_ENUMERATION spi_angle_type mt6816 +0x00000003
 DECL_ENUMERATION spi_angle_type tle5012b +0x00000002
 DECL_ENUMERATION spi_angle_type as5047d +0x00000001
 DECL_ENUMERATION spi_angle_type a1333 +0x00000000
-_DECL_CALLLIST ctr_run_taskfuncs mpu9250_task
-DECL_COMMAND_FLAGS command_query_mpu9250_status 0 query_mpu9250_status oid=%c
-DECL_COMMAND_FLAGS command_query_mpu9250 0 query_mpu9250 oid=%c rest_ticks=%u
-DECL_COMMAND_FLAGS command_config_mpu9250 0 config_mpu9250 oid=%c i2c_oid=%c
-_DECL_CALLLIST ctr_run_taskfuncs lis2dw_task
-DECL_COMMAND_FLAGS command_query_lis2dw_status 0 query_lis2dw_status oid=%c
-DECL_COMMAND_FLAGS command_query_lis2dw 0 query_lis2dw oid=%c rest_ticks=%u
-DECL_COMMAND_FLAGS command_config_lis2dw 0 config_lis2dw oid=%c spi_oid=%c
 _DECL_ENCODER sensor_bulk_status oid=%c clock=%u query_ticks=%u next_sequence=%hu buffered=%u possible_overflows=%hu
 _DECL_ENCODER sensor_bulk_data oid=%c sequence=%hu data=%*s
+DECL_COMMAND_FLAGS command_sos_filter_activate 0 sos_filter_set_active oid=%c n_sections=%c coeff_frac_bits=%c
+_DECL_STATIC_STR Filter section index larger than max_sections
+DECL_COMMAND_FLAGS command_trigger_analog_set_offset_scale 0 sos_filter_set_offset_scale oid=%c offset=%i scale=%i scale_frac_bits=%c auto_offset=%c
+DECL_COMMAND_FLAGS command_sos_filter_set_state 0 sos_filter_set_state oid=%c section_idx=%c state0=%i state1=%i
+DECL_COMMAND_FLAGS command_sos_filter_set_section 0 sos_filter_set_section oid=%c section_idx=%c sos0=%i sos1=%i sos2=%i sos3=%i sos4=%i
+_DECL_STATIC_STR Filter section index larger than max_sections
+DECL_COMMAND_FLAGS command_config_sos_filter 0 config_sos_filter oid=%c max_sections=%c
+DECL_COMMAND_FLAGS command_trigger_analog_query_state 0 trigger_analog_query_state oid=%c
+_DECL_ENCODER trigger_analog_state oid=%c homing=%c homing_clock=%u
+DECL_COMMAND_FLAGS command_trigger_analog_home 0 trigger_analog_home oid=%c trsync_oid=%c trigger_reason=%c error_reason=%c clock=%u monitor_ticks=%u monitor_max=%u
+DECL_COMMAND_FLAGS command_trigger_analog_set_trigger 0 trigger_analog_set_trigger oid=%c trigger_analog_type=%c trigger_value=%i
+DECL_COMMAND_FLAGS command_trigger_analog_set_raw_range 0 trigger_analog_set_raw_range oid=%c raw_min=%i raw_max=%i
+DECL_COMMAND_FLAGS command_config_trigger_analog 0 config_trigger_analog oid=%c sos_filter_oid=%c
+DECL_ENUMERATION trigger_analog_error: SENSOR_SPECIFIC +0x00000003
+DECL_ENUMERATION trigger_analog_error: MONITOR +0x00000002
+DECL_ENUMERATION trigger_analog_error: OVERFLOW +0x00000001
+DECL_ENUMERATION trigger_analog_error: RAW_RANGE +0x00000000
+DECL_ENUMERATION trigger_analog_type diff_peak_gt +0x00000002
+DECL_ENUMERATION trigger_analog_type gt +0x00000001
+DECL_ENUMERATION trigger_analog_type abs_ge +0x00000000
 _DECL_CALLLIST ctr_run_initfuncs watchdog_init
 _DECL_CALLLIST ctr_run_taskfuncs watchdog_reset
-_DECL_STATIC_STR Not a valid input pin
-_DECL_STATIC_STR Not an output pin
-DECL_ENUMERATION_RANGE pin PF0 +0x00000050 +0x00000010
-DECL_ENUMERATION_RANGE pin PE0 +0x00000040 +0x00000010
-DECL_ENUMERATION_RANGE pin PD0 +0x00000030 +0x00000010
-DECL_ENUMERATION_RANGE pin PC0 +0x00000020 +0x00000010
-DECL_ENUMERATION_RANGE pin PB0 +0x00000010 +0x00000010
-DECL_ENUMERATION_RANGE pin PA0 +0x00000000 +0x00000010
 DECL_ARMCM_IRQ ResetHandler -0x0000000F
 DECL_CONSTANT_STR MCU stm32g0b1xx
 _DECL_CALLLIST ctr_run_shutdownfuncs clear_active_irq
 DECL_COMMAND_FLAGS command_reset 0x01 reset
+DECL_CONSTANT_STR RESERVE_PINS_crystal PF0,PF1
 _DECL_CALLLIST ctr_run_taskfuncs timer_task
 _DECL_STATIC_STR Rescheduled timer in the past
 DECL_CONSTANT CLOCK_FREQ +0x03D09000
 _DECL_CALLLIST ctr_run_initfuncs timer_init
 DECL_ARMCM_IRQ TIMx_IRQHandler +0x0000000F
 _DECL_CALLLIST ctr_run_shutdownfuncs timer_reset
-DECL_CONSTANT_STR RESERVE_PINS_crystal PF0,PF1
+_DECL_STATIC_STR Not a valid pin
+DECL_ENUMERATION_RANGE pin PF0 +0x00000050 +0x00000010
+DECL_ENUMERATION_RANGE pin PE0 +0x00000040 +0x00000010
+DECL_ENUMERATION_RANGE pin PD0 +0x00000030 +0x00000010
+DECL_ENUMERATION_RANGE pin PC0 +0x00000020 +0x00000010
+DECL_ENUMERATION_RANGE pin PB0 +0x00000010 +0x00000010
+DECL_ENUMERATION_RANGE pin PA0 +0x00000000 +0x00000010
 _DECL_STATIC_STR Not a valid ADC pin
 DECL_ENUMERATION pin ADC_TEMPERATURE +0x000000FE
 DECL_CONSTANT ADC_MAX +0x00000FFF
-_DECL_STATIC_STR i2c timeout
+_DECL_STATIC_STR Invalid spi bus
+DECL_CONSTANT_STR BUS_PINS_spi3 PB4,PB5,PB3
+DECL_ENUMERATION spi_bus spi3 +0x00000006
+DECL_CONSTANT_STR BUS_PINS_spi2a PC2,PC3,PB10
+DECL_ENUMERATION spi_bus spi2a +0x00000003
+DECL_CONSTANT_STR BUS_PINS_spi1a PB4,PB5,PB3
+DECL_ENUMERATION spi_bus spi1a +0x00000002
+DECL_CONSTANT_STR BUS_PINS_spi1 PA6,PA7,PA5
+DECL_ENUMERATION spi_bus spi1 +0x00000001
+DECL_CONSTANT_STR BUS_PINS_spi2 PB14,PB15,PB13
+DECL_ENUMERATION spi_bus spi2 +0x00000000
+DECL_CONSTANT_STR BUS_PINS_spi3_PC11_PC12_PC10 PC11,PC12,PC10
+DECL_ENUMERATION spi_bus spi3_PC11_PC12_PC10 +0x00000007
+DECL_CONSTANT_STR BUS_PINS_spi3_PB4_PB5_PB3 PB4,PB5,PB3
+DECL_ENUMERATION spi_bus spi3_PB4_PB5_PB3 +0x00000006
+DECL_CONSTANT_STR BUS_PINS_spi2_PB6_PB7_PB8 PB6,PB7,PB8
+DECL_ENUMERATION spi_bus spi2_PB6_PB7_PB8 +0x00000005
+DECL_CONSTANT_STR BUS_PINS_spi2_PB2_PB11_PB10 PB2,PB11,PB10
+DECL_ENUMERATION spi_bus spi2_PB2_PB11_PB10 +0x00000004
+DECL_CONSTANT_STR BUS_PINS_spi2_PC2_PC3_PB10 PC2,PC3,PB10
+DECL_ENUMERATION spi_bus spi2_PC2_PC3_PB10 +0x00000003
+DECL_CONSTANT_STR BUS_PINS_spi1_PB4_PB5_PB3 PB4,PB5,PB3
+DECL_ENUMERATION spi_bus spi1_PB4_PB5_PB3 +0x00000002
+DECL_CONSTANT_STR BUS_PINS_spi1_PA6_PA7_PA5 PA6,PA7,PA5
+DECL_ENUMERATION spi_bus spi1_PA6_PA7_PA5 +0x00000001
+DECL_CONSTANT_STR BUS_PINS_spi2_PB14_PB15_PB13 PB14,PB15,PB13
+DECL_ENUMERATION spi_bus spi2_PB14_PB15_PB13 +0x00000000
 _DECL_STATIC_STR Unsupported i2c bus
+DECL_CONSTANT_STR BUS_PINS_i2c3_PA7_PA6 PA7,PA6
+DECL_ENUMERATION i2c_bus i2c3_PA7_PA6 +0x00000008
+DECL_CONSTANT_STR BUS_PINS_i2c3_PC0_PC1 PC0,PC1
+DECL_ENUMERATION i2c_bus i2c3_PC0_PC1 +0x00000007
 DECL_CONSTANT_STR BUS_PINS_i2c3_PB3_PB4 PB3,PB4
-DECL_ENUMERATION i2c_bus i2c3_PB3_PB4 +0x00000005
+DECL_ENUMERATION i2c_bus i2c3_PB3_PB4 +0x00000006
+DECL_CONSTANT_STR BUS_PINS_i2c2_PA7_PA6 PA7,PA6
+DECL_ENUMERATION i2c_bus i2c2_PA7_PA6 +0x00000005
 DECL_CONSTANT_STR BUS_PINS_i2c2_PB13_PB14 PB13,PB14
 DECL_ENUMERATION i2c_bus i2c2_PB13_PB14 +0x00000004
 DECL_CONSTANT_STR BUS_PINS_i2c2_PB10_PB11 PB10,PB11
@@ -216,30 +319,16 @@ DECL_CONSTANT_STR BUS_PINS_i2c1_PB8_PB9 PB8,PB9
 DECL_ENUMERATION i2c_bus i2c1_PB8_PB9 +0x00000001
 DECL_CONSTANT_STR BUS_PINS_i2c1_PB6_PB7 PB6,PB7
 DECL_ENUMERATION i2c_bus i2c1_PB6_PB7 +0x00000000
-_DECL_STATIC_STR Invalid spi bus
-DECL_CONSTANT_STR BUS_PINS_spi3 PB4,PB5,PB3
-DECL_ENUMERATION spi_bus spi3 +0x00000004
-DECL_CONSTANT_STR BUS_PINS_spi2a PC2,PC3,PB10
-DECL_ENUMERATION spi_bus spi2a +0x00000003
-DECL_CONSTANT_STR BUS_PINS_spi1a PB4,PB5,PB3
-DECL_ENUMERATION spi_bus spi1a +0x00000002
-DECL_CONSTANT_STR BUS_PINS_spi1 PA6,PA7,PA5
-DECL_ENUMERATION spi_bus spi1 +0x00000001
-DECL_CONSTANT_STR BUS_PINS_spi2 PB14,PB15,PB13
-DECL_ENUMERATION spi_bus spi2 +0x00000000
-_DECL_CALLLIST ctr_run_shutdownfuncs canserial_shutdown
-DECL_COMMAND_FLAGS command_get_canbus_id 0x01 get_canbus_id
-_DECL_ENCODER canbus_id canbus_uuid=%.*s canbus_nodeid=%u
-_DECL_CALLLIST ctr_run_taskfuncs canserial_rx_task
-DECL_CONSTANT RECEIVE_WINDOW +0x000000C0
-_DECL_STATIC_STR Another CAN node assigned this ID
-_DECL_CALLLIST ctr_run_taskfuncs canserial_tx_task
-_DECL_CALLLIST ctr_run_initfuncs can_init
-DECL_ARMCM_IRQ CAN_IRQHandler +0x00000015
-DECL_CONSTANT_STR RESERVE_PINS_CAN PB0,PB1
-DECL_CONSTANT CANBUS_FREQUENCY +0x000F4240
+_DECL_CALLLIST ctr_run_initfuncs usb_init
+DECL_ARMCM_IRQ USB_IRQHandler +0x00000008
+DECL_CONSTANT_STR RESERVE_PINS_USB PA11,PA12
 _DECL_CALLLIST ctr_run_initfuncs chipid_init
+_DECL_CALLLIST ctr_run_shutdownfuncs usb_shutdown
+_DECL_CALLLIST ctr_run_taskfuncs usb_ep0_task
+_DECL_CALLLIST ctr_run_taskfuncs usb_bulk_out_task
+_DECL_CALLLIST ctr_run_taskfuncs usb_bulk_in_task
 _DECL_STATIC_STR Invalid PWM channel
+_DECL_STATIC_STR PWM already programmed with different pulse duration
 _DECL_STATIC_STR PWM already programmed at different speed
 _DECL_STATIC_STR Not a valid PWM pin
-DECL_CONSTANT PWM_MAX +0x000000FF
+DECL_CONSTANT PWM_MAX +0x00008000
